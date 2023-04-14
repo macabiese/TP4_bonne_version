@@ -1,0 +1,162 @@
+#Emile Macabies
+#avril 2023
+#TP4
+
+#importations
+import arcade
+import random
+
+#variables pour la creation de la fenetr
+SCREEN_WIDTH = 800
+SCREEN_HEIGHT = 600
+
+#liste des couleurs rouge
+COLORS = [arcade.color.RED, arcade.color.RED_BROWN, arcade.color.RED_DEVIL, arcade.color.RED_ORANGE, arcade.color.LIGHT_RED_OCHRE, arcade.color.BROWN, arcade.color.BARN_RED, arcade.color.RED_BROWN, arcade.color.ORANGE_RED, arcade.color.BOSTON_UNIVERSITY_RED, arcade.color.CHINESE_RED, arcade.color.TRACTOR_RED]
+
+#classe Balle
+class Balle:
+    #initialisation
+    def __init__(self, x, y, change_x, change_y, rayon, color):
+        self.x = x
+        self.y = y
+        self.change_x = change_x
+        self.change_y = change_y
+        self.rayon = rayon
+        self.color = color
+
+    #methode update pour que les objets ne sortent pas de la fenetre
+    def update(self):
+        self.x += self.change_x
+        self.y += self.change_y
+
+        if self.x < 0 + self.rayon:
+            self.change_x *= -1
+        if self.x > SCREEN_WIDTH - self.rayon:
+            self.change_x *= -1
+        if self.y < 0 + self.rayon:
+            self.change_y *= -1
+        if self.y > SCREEN_HEIGHT - self.rayon:
+            self.change_y *= -1
+
+    #methode draw pour dessiner les objets
+    def draw(self):
+        arcade.draw_circle_filled(self.x, self.y, self.rayon, self.color)
+
+#classe Rectangle
+class Rectangle:
+    #initialisation
+    def __init__(self, x, y, change_x, change_y, width, height, color, angle):
+        self.x = x
+        self.y = y
+        self.change_x = change_x
+        self.change_y = change_y
+        self.width = width
+        self.height = height
+        self.color = color
+        self.angle = angle
+
+    #methode update pour que les objets ne sortent pas de la fenetre
+    def update(self):
+        self.x += self.change_x
+        self.y += self.change_y
+
+        if self.x < 0 + self.width:
+            self.change_x *= -1
+        if self.x > SCREEN_WIDTH - self.width:
+            self.change_x *= -1
+        if self.y < 0 + self.height:
+            self.change_y *= -1
+        if self.y > SCREEN_HEIGHT - self.height:
+            self.change_y *= -1
+
+    #methode draw pour dessiner les objets
+    def draw(self):
+        x = random.randint(0, 600)
+        y = random.randint(0, 800)
+        arcade.draw_rectangle_filled(self.x, self.y, self.width, self.height, self.color, self.angle)
+
+#classe MyGame
+class MyGame(arcade.Window):
+    #initialisation de la fenetre
+    def __init__(self):
+        super().__init__(SCREEN_WIDTH, SCREEN_HEIGHT, "Exercice #1")
+
+        #creation des listes pour contenir les objets de la classe Balle et Rectangle
+        self.liste_balles = []
+        self.liste_rectangles = []
+
+    #methode setup pour creer les objets
+    def setup(self):
+        rayon = random.randint(10, 30)
+        change_x = random.randint(-5, 5)
+        change_y = random.randint(-5, 5)
+        width = random.randint(10, 50)
+        height = random.randint(10, 50)
+        angle = random.randint(100, 360)
+        
+        #creation des objets
+        boule = Balle(random.randint(0 + rayon, SCREEN_WIDTH - rayon), random.randint(0 + rayon, SCREEN_HEIGHT - rayon), change_x, change_y, rayon, random.choice(COLORS))
+        rectangue = Rectangle(random.randint(0 + width, SCREEN_WIDTH - rayon), random.randint(0 + height, SCREEN_HEIGHT - rayon), change_x, change_y, width, height, random.choice(COLORS), angle)
+        self.liste_balles.append(boule)
+        self.liste_rectangles.append(rectangue)
+
+    #methode update pour mettre a jour les objets
+    def on_update(self, delta_time: float):
+        for balles in self.liste_balles:
+            balles.update()
+
+        for rectangles in self.liste_rectangles:
+            rectangles.update()
+
+    #methode draw pour dessiner les objets
+    def on_draw(self):
+        arcade.start_render()
+
+        for balles in self.liste_balles:
+            balles.draw()
+
+        for rectangles in self.liste_rectangles:
+            rectangles.draw()
+
+    #methode pour faire apparaitre les objets avec un clic de la souris
+    def on_mouse_press(self, x: int, y: int, button: int, modifiers: int):
+
+        #clic gauche pour faire apparaitre des balles
+        if button == arcade.MOUSE_BUTTON_LEFT:
+            rayon = random.randint(10, 30)
+            x = x
+            y = y
+            change_x = random.randint(-5, 5)
+            change_y = random.randint(-5, 5)
+            if change_x == 0 and change_y == 0:
+                change_x = 1
+                change_y = 1
+            color = random.choice(COLORS)
+            boule = Balle(x, y, change_x, change_y, rayon, color)
+            self.liste_balles.append(boule)
+
+        #clic droit pour faire apparaitre des rectangles
+        if button == arcade.MOUSE_BUTTON_RIGHT:
+            width = random.randint(10, 50)
+            height = random.randint(10, 50)
+            x = x
+            y = y
+            change_x = random.randint(-5, 5)
+            change_y = random.randint(-5, 5)
+            if change_x == 0 and change_y == 0:
+                change_x = 1
+                change_y = 1
+            color = random.choice(COLORS)
+            angle = random.randint(100, 360)
+            rectangue = Rectangle(x, y, change_x, change_y, width, height, color, angle)
+            self.liste_rectangles.append(rectangue)
+
+#fonction main pour lancer le jeu
+def main():
+    my_game = MyGame()
+    my_game.setup()
+
+    arcade.run()
+
+#appel de la fonction main pour lancer le jeu
+main()
